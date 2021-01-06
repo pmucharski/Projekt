@@ -1,0 +1,86 @@
+/* 1. Wyświetla numer oraz typ pokoju który jest niezarezerwowany. */
+
+CREATE VIEW Zapytanie_1 AS
+SELECT  pokoje.typ_pokoju, pokoje.nr_pokoju, pokoje.max_il_osob
+FROM pokoje
+WHERE czy_wolny='niezarezerwowany'
+
+/* 2. Wyświetla Imie i Nazwisko gosci hotelu którzy złożyli rezerwacje w Grudniu zeszłego roku. */
+
+CREATE VIEW Zapytanie_2 AS
+SELECT DISTINCT goscie.imie, goscie.nazwisko, rezerwacje.data_rezerwacji
+FROM goscie, rezerwacje
+WHERE goscie.id_goscia = rezerwacje.id_goscia AND 
+MONTH(data_rezerwacji) = 12
+
+/* 3. Wyświetla osoby które zrezygnowały z pokoju oraz informacje o kwocie i statusie zaplaty. */
+
+CREATE VIEW zapytanie_3 AS
+SELECT goscie.imie, goscie.nazwisko, platnosci.kwota_zl, platnosci.czy_zalpacil,platnosci.rezygnacja 
+FROM goscie, platnosci
+WHERE goscie.id_goscia =platnosci.id_goscia AND
+rezygnacja IS NOT NULL
+
+/* 4. Wyświetla dane osob z tabeli goscie i rezerwacje w postaci (imie, nazwisko, adres zamieszkania, data zakraterowania,
+data wykwaterowania), dane dotyczą osób z miast których nazwa zaczyna się na litere "K".
+Sortuje dane rosnąco wedlug nazwisko, imie, adres zamieszkania, data zakwaterowania, data wykwaterowania. */
+
+CREATE VIEW zapytanie_4 AS
+SELECT goscie.imie, goscie.nazwisko, goscie.adres_zamieszkania,
+rezerwacje.data_zakwaterowania,
+rezerwacje.data_wykwaterowania
+FROM goscie INNER JOIN rezerwacje
+ON goscie.id_goscia = rezerwacje.id_goscia
+WHERE (goscie.adres_zamieszkania LIKE "k%")
+ORDER BY goscie.nazwisko, goscie.imie, goscie.adres_zamieszkania,
+rezerwacje.data_zakwaterowania, rezerwacje.data_wykwaterowania
+
+/* 5. Wyświetla dane z tabeli goscie oraz platnosci (imie, nazwisko, nr telefonu, rezygnacja),
+dane posortowane według rezygnacji. Wykorzystane zlaczenie lewostronne*/
+
+CREATE VIEW zapytanie_5 AS
+SELECT goscie.imie, goscie.nazwisko, goscie.nr_telefonu,
+platnosci.rezygnacja
+FROM goscie LEFT JOIN platnosci
+ON goscie.id_goscia = platnosci.id_goscia
+ORDER BY rezygnacja
+
+/* 6. Wyświela liczbe nieoplaconych rezerwacji */
+CREATE VIEW zapytanie_6 AS
+SELECT COUNT(*) AS Liczba_nieoplaconych_rezerwacji
+FROM platnosci 
+WHERE czy_zaplacil LIKE "oczekiwanie"
+
+/* 7. Wyświetla ilość wszystkich gości na 2021r. */
+
+CREATE VIEW zapytanie_7 AS
+SELECT SUM(platnosci.ilosc_gosci) AS ilosc_gosci_na_2021r
+FROM platnosci, rezerwacje
+WHERE YEAR(rezerwacje.data_rezerwacji) = 2021
+
+/* 8. Wyświetla rodzaje pokoi z przedziału 90-140zł za noc. */
+
+CREATE VIEW zapytanie_8 AS 
+SELECT DISTINCT typ_pokoju, cena_za_noc, czy_wolny 
+FROM pokoje
+WHERE cena_za_noc BETWEEN 90 AND 140
+
+/* 9. Wyświetla odpowiednio ile pokoji nadego typu jest wolnych w hotelu. */
+
+CREATE VIEW zapytanie_9 AS
+SELECT typ_pokoju, 
+    COUNT(*) AS ilosc_wolnych_pokoi
+FROM
+    pokoje
+    WHERE czy_wolny = 'niezarezerwowany'
+GROUP BY typ_pokoju
+
+/* 10. Wyświetla ID oraz numer pokoju klienta który jest obcokrajowcem.
+
+CREATE VIEW zapytanie_10 AS
+SELECT id_goscia, nr_pokoju AS nr_pokoju 
+FROM rezerwacje WHERE rezerwacje.id_goscia IN 
+(SELECT goscie.id_goscia 
+FROM goscie
+WHERE (goscie.Kraj NOT LIKE 'POLSKA'))
+

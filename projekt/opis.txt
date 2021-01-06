@@ -1,0 +1,11 @@
+Baza danych służy do zarządzania daną siecią hotelu, która jest oparta na 6 tabelach powiązanych ze sobą różnymi relacjami. Jest skutecznym rozwiązaniem do lepszego zorganizowaniu pracy hoteli. Składa się z niezbędnych danych do szybszej oraz przyjemniejszej pracy pracowników hotelu.
+
+Przechowuje informacje o:
+Klientach miszkających w hotelu, oraz tych którzy złożyli rezerwacje.
+Pokojach, określające jakie pokoje oraz w jakiej cene znajdują się w hotelu.
+Dokonanych rezerwacjach (szczegółowo opisanych).
+Płatnościach dokonanych oraz niedokonanych, w tym rezygnacjach z rezerwacji.
+
+
+Baza została wykonana w phpmyadmin.
+Zapytania, wyzwalacze, funkcje i procedury zostały dodatkowo umieszczone w plikach .txt

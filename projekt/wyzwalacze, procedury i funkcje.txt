@@ -1,0 +1,37 @@
+WYZWALACZE
+
+1. Automatycznie ustawia date i godzine nowo dodanych platnosci
+
+CREATE TRIGGER `data_platnosci` BEFORE INSERT ON `platnosci`
+ FOR EACH ROW SET NEW.data_platnosci = now()
+ 
+ 2. Uzupełnia wartość pola pop_max_il_osob (poprzednia maksymalna ilosc osób) - w momencie kiedy ulegnie zmianie.
+ 
+ CREATE TRIGGER `modyfikacja` BEFORE UPDATE ON `pokoje`
+ FOR EACH ROW IF NEW.max_il_osob!=OLD.max_il_osob THEN
+SET NEW.pop_max_il_osob = OLD.max_il_osob;
+END IF
+
+PROCEDURY
+
+1. Wyświetla id rezerwacji oraz kwote którą powinien zaplacic klient.
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `procedura1`(IN `cena_od` FLOAT, IN `cena_do` FLOAT)
+SELECT `id_rezerwacji`, `kwota_zl`
+FROM platnosci
+WHERE kwota_zl >= cena_od AND kwota_zl <= cena_do
+ORDER BY kwota_zl$$
+DELIMITER ;
+
+FUNKCJE
+
+1. Wyświetla pełne imie w jedym rekordzie
+
+Użycie: SELECT id_goscia, pelneimie(imie, nazwisko) as pelneimie FROM goscie
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` FUNCTION `PelneImie`(imie varchar(50), nazwisko varchar(50)) RETURNS varchar(50) CHARSET utf8mb4
+    DETERMINISTIC
+RETURN CONCAT(imie, ' ', nazwisko)$$
+DELIMITER ;
